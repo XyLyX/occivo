@@ -1,4 +1,4 @@
-import {json,db,trim,validateAdmin,ready} from "./_shared.mjs";
+import {json,db,trim,validateAdmin,ready} from "../../lib/server.mjs";
 const statuses=new Set(["new","reviewing","sourcing","awaiting_customer","approved","fulfilled","cancelled","closed"]);
 const idPattern=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 export default async function handler(request){

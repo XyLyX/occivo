@@ -15,7 +15,7 @@ jobs:
         run: |
           node --check public/concierge.js
           node --check public/admin.js
-          node --check netlify/functions/_shared.mjs
+          node --check lib/server.mjs
           node --check netlify/functions/submit-request.mjs
           node --check netlify/functions/admin-requests.mjs
           node --check netlify/functions/recommend.mjs

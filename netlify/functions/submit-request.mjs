@@ -1,4 +1,4 @@
-import {env,supa,pub,secret,db,trim,json,ready} from "./_shared.mjs";
+import {env,supa,pub,secret,db,trim,json,ready} from "../../lib/server.mjs";
 const allowedRecipients=new Set(["Partner or spouse","Family member","Friend","Colleague or client","Someone else"]);
 const allowedBudgets=new Set(["Under AED 150","AED 150–250","AED 250–500","AED 500–1000","Above AED 1000","Prefer not to say"]);
 const allowedTimings=new Set(["Today or tomorrow","Within 3 days","Within a week","Later / flexible"]);
