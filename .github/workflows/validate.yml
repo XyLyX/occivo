@@ -1,0 +1,32 @@
+name: Validate OCCIVO beta
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: JS syntax
+        run: |
+          node --check public/concierge.js
+          node --check public/admin.js
+          node --check netlify/functions/_shared.mjs
+          node --check netlify/functions/submit-request.mjs
+          node --check netlify/functions/admin-requests.mjs
+          node --check netlify/functions/recommend.mjs
+      - name: Security and file isolation checks
+        run: |
+          test -f public/index.html
+          test -f public/concierge.html
+          test -f public/admin.html
+          test ! -d public/netlify
+          ! grep -R 'admin@occivo.com' public/
+          ! grep -R 'sb_secret_' public/
+          grep -q 'publish = "public"' netlify.toml
+      - name: Unit tests
+        run: node --test tests/*.test.mjs

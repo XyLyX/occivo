@@ -12,4 +12,20 @@ briefForm.addEventListener("submit",async(event)=>{event.preventDefault();if(!br
 document.getElementById("back-btn").addEventListener("click",()=>showStep("brief"));
 document.getElementById("continue-btn").addEventListener("click",()=>{document.getElementById("request-brief").value=JSON.stringify(brief);document.getElementById("selected-concept").value=JSON.stringify(concepts[chosen]);showStep("request")});
 document.getElementById("request-back").addEventListener("click",()=>showStep("ideas"));
-requestForm.addEventListener("submit",async(event)=>{event.preventDefault();if(!requestForm.reportValidity())return;const formData=new FormData(requestForm);const btn=document.getElementById("request-submit");btn.disabled=true;statusEl.textContent="Submitting your request…";try{const response=await fetch("/",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:new URLSearchParams(formData).toString()});if(!response.ok)throw new Error("submission failed");statusEl.textContent="Your request has been submitted. Our concierge will review the details before confirming any offer.";requestForm.reset();btn.textContent="Request submitted";btn.disabled=true;}catch(error){statusEl.textContent="We couldn't submit your request. Please email concierge@occivo.com with your gifting details.";btn.disabled=false;}});
+requestForm.addEventListener("submit",async(event)=>{
+ event.preventDefault();if(!requestForm.reportValidity())return;
+ const data=new FormData(requestForm);
+ const payload={customer_name:String(data.get("customer_name")||""),customer_email:String(data.get("customer_email")||""),customer_phone:String(data.get("customer_phone")||""),message:String(data.get("message")||""),brief,concept:concepts[chosen],permission:data.get("permission")==="yes",honeypot:String(data.get("bot-field")||"")};
+ const btn=document.getElementById("request-submit");btn.disabled=true;
+ statusEl.textContent="Securely submitting your gifting request…";
+ try{
+  const response=await fetch("/api/requests",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
+  const result=await response.json().catch(()=>({}));
+  if(!response.ok||!result.accepted||!result.reference)throw Error(result.error||"Submission could not be confirmed");
+  statusEl.textContent="Request "+result.reference+" received. Please keep this reference. No order or delivery is confirmed yet.";
+  requestForm.reset();btn.textContent="Request received";btn.disabled=true;
+ }catch(error){
+  statusEl.textContent="Your request was NOT saved. "+(error.message||"Please try again.")+" You can contact concierge@occivo.com directly.";
+  btn.disabled=false;
+ }
+});

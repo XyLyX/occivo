@@ -1,56 +1,33 @@
-# OCCIVO — Deployment, Operations and Launch Gates
+# OCCIVO — Deployment and security gates
 
-## Ownership
+## Hosting
+- In Netlify use GitHub XyLyX/occivo, branch main, publish directory public, Functions directory netlify/functions.
+- Keep team-only visitor restrictions until QA passes; do not connect the production custom domain prematurely.
+- Netlify deployment ID has not been independently confirmed from the connected project response.
 
-- GitHub: XyLyX/occivo (main)
-- Domain: occivo.com registered with Porkbun; domain DNS has not been configured by this repository.
-- Netlify: use the OCCIVO-owned account, *not* the separate LegiSchola account currently connected to ChatGPT.
-- Do not publicize a production URL until QA, privacy and service-readiness reviews have passed.
+## REQUIRED MANUAL SECRET CONFIGURATION
+- Netlify environment-variable connector returned HTTP 403. Configure the following directly in Netlify UI: Project configuration > Environment variables.
+- SUPABASE_SECRET_KEY: create a dedicated sb_secret_... key in OCCIVO Supabase Settings > API Keys. Scope must include Functions and it must be marked secret. Redeploy after saving.
+- NEVER send a secret via chat or GitHub. Public project URL and publishable key are provided as safe server fallbacks.
+- If this secret is absent the form fails safely with an explicit not-saved message.
 
-## Deploying to Netlify
+## Supabase Auth: administrator
+- In Supabase project vtpaxzptyyggapnlkoma open Authentication > Users > Add user and create the private OCCIVO administrator mailbox as a verified user with a unique strong password.
+- Supabase Auth login is separate from the Netlify/Supabase dashboard login. Disable public signup for this internal-only project.
+- Visit /admin.html, sign in, enroll an authenticator app, verify the TOTP code. Subsequent logins require TOTP.
+- The server independently verifies the session, email confirmation and aal2 before any customer record is released.
 
-1. Connect XyLyX/occivo under OCCIVO's own Netlify account.
-2. Create a site from Git; main branch; no build command; publish directory `.`; functions directory `netlify/functions`.
-3. Use a restricted preview during security, product and accessibility testing.
-4. Confirm Netlify Forms detected form `gift-request` and that a real test submission appears in the restricted dashboard. Configure notifications to an authorised team mailbox, not a public web endpoint.
-5. Verify project access, SSL, site settings and security headers before connecting occivo.com.
+## Release tests
+1. Visit /concierge.html, complete a real test request with consent, verify receipt displays OC-... and the row appears in Supabase gift_requests.
+2. Verify an event is written to gift_request_events. Bad requests and network failures must not show success.
+3. Verify anonymous callers receive 403 for /api/admin-requests; no direct table reads with publishable keys.
+4. Test /admin.html sign-in and TOTP. Check list, detail, status save and history update.
+5. Test 320px/375px/1280px, keyboard-only selection and an actual NVDA/VoiceOver reader.
+6. Ensure server function code under netlify/functions is not reachable as a published static file.
+7. Confirm order and concierge mail aliases operate before relying on outbound customer communications.
 
-## Contact configuration
-
-Public contact identities:
-
-| Address | Public use |
-| --- | --- |
-| hello@occivo.com | General enquiries and homepage footer |
-| concierge@occivo.com | Gifting advice and personal requests |
-| orders@occivo.com | Order coordination, quote and vendor enquiries |
-| support@occivo.com | After-sales and delivery help |
-
-The private administrative mailbox must not be disclosed in public HTML, client scripts or public configuration. Email aliases, Zoho send-as identities, SPF, DKIM and DMARC must be configured and independently tested; adding mailto: links does not create mailboxes.
-
-## Server-side AI
-
-- Netlify function `netlify/functions/recommend.mjs`, route `/api/recommend`.
-- Server-side environment variable `OPENAI_API_KEY` is optional. Without it, the client falls back to illustrative gift directions. Optional `OPENAI_MODEL` can select a supported Chat Completions model.
-- Never put credentials into GitHub, forms, client JS or a response.
-- No name, email or phone number is sent to the recommendation service. Only the gifting brief and optional preferences are sent.
-- **Before enabling public paid AI requests, add rate limiting, logging/alerting, request quotas and abuse controls.**
-- AI output is an idea, not an offer. Final procurement, box selection, quality control, delivery timing and price require human verification.
-
-## Request privacy, legal and quality
-
-- Pilot requests use Netlify Forms (subject to plan/product compatibility). This is not yet a role-based custom admin dashboard.
-- Review the privacy notice for actual processors, recipient details, international transfers, retention/deletion and applicable UAE law before collecting public data. Restrict team access.
-- Test Netlify Forms submission and notification delivery with the real deployed site; local static servers do not save requests.
-- Review business licence, consumer rights, refund handling, trademark, payment acceptance and delivery liabilities before accepting paid orders.
-- Use individually purchased premium boxes from Duboxx during the 90-day pilot; capture dimensions, SKU, packaging cost, suitability and customer experience data. Never trade down quality for margin.
-- Source actual product imagery and photography consistent with the Warm Editorial brief; illustrations are placeholders.
-
-## Accessibility and browser release gate
-
-- Test keyboard navigation, focus states, form validation and skip links on mobile and desktop.
-- Run a manual NVDA or VoiceOver test through recipient selection, idea choice and request submission.
-- Review fonts: Cormorant Garamond and DM Sans currently have fallback stacks. Add licensed self-hosted assets with `font-display: swap` and test layout changes.
-- Test contrast not only pairwise, but in real composed states (buttons on cards, input borders and focus on sand backgrounds, errors, disabled).
-- Check reduced motion, low connectivity, privacy text and no horizontal overflow at narrow widths.
-- No public marketing until the request pipeline and human concierge operations are reliable.
+## Other obligations
+- Review UAE privacy and international data transfer risks: the Supabase database is hosted in EU Paris.
+- Review licensing, consumer rights, delivery, replacement and payment duties before processing paid orders.
+- Pilot packaging: individual luxury boxes from Duboxx; never compromise product or fulfilment quality for margin.
+- Add retention, monitoring, spam/bot protection and operational SLA before opening unrestricted public intake.
