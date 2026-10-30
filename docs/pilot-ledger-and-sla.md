@@ -1,39 +1,43 @@
-# OCCIVO · Pilot request ledger (existing Supabase, no separate sheet)
-The live source of truth is private public.gift_requests, NOT a new Zoho or Google Sheet. The admin application shows the latest 100 with status filters and individual details.
+# OCCIVO 90-day Pilot — Data and Metrics
 
-## Already captured
-- request_ref (OC-XXXXXXXXXXXXXX)
-- created_at / updated_at
-- customer_email, optional customer_phone
-- gifting_brief JSON: recipient, recipient_name, recipient_other, child_age, occasion, occasion_other, timing, budget, destination, dubai_area, about_them, directions, avoid, presentation, card_message, other_notes
-- selected_concept: initially a placeholder saying human curation is pending
-- status, internal_notes, consent_at, source
-- events in gift_request_events
+## Source of truth
 
-## Existing status mapping
-- new — submitted; not yet reviewed
-- reviewing — triage and personal curation
-- sourcing — checking candidate products, packaging and delivery
-- awaiting_customer — options sent or awaiting further response
-- approved — customer approved verified offer; not necessarily paid
-- fulfilled — completed and delivered
-- cancelled — withdrawn
-- closed — no further action, including lost prospects
+Use existing private Supabase \`gift_requests\` + \`gift_request_events\`. **No parallel Zoho/Google tracker is needed.** One case reference across all customer emails, drafts, vendor evaluations and fulfilment records. The private dashboard currently shows up to 100 requests with stage filters; it is not yet a complete order/accounting system.
 
-For analysis, separate quoted, paid, won and lost would require future status additions and clearly defined business rules; don't mislabel a request as an order.
+### Already live
+- Request reference, receipt timestamp, customer email and optional WhatsApp
+- Recipient name (optional), relationship, occasion, timing category, budget band, delivery area
+- Optional notes, directions, exclusions, presentation and greeting-card preference
+- Request status, internal notes, event log, consent timestamp
+- No auto-confirmation email
 
-## 90-day KPIs
-- Form start-to-submit conversion (requires consented analytics before instrumenting; not yet implemented)
-- Submission-to-first-human-response elapsed hours
-- Submission-to-three-directions elapsed hours
-- Accepted proposal rate; cancellations/closed
-- All-in proposed price vs actual gift, Duboxx box, sourcing, shipping, replacements
-- Delivery promise adherence; quality incidents and recovery costs
-- Top recipient/occasion/budget/delivery/location segments
-- Avoidance/presentation-field usage and whether suggestions reflect them
+### Data to add ONLY after confirming the intake-to-admin loop
+- First human reply timestamp; three directions sent timestamp; sending identity
+- Each direction's draft, verified candidate, sourcing source, verification time, all-in indicative quote
+- Customer selection/refinement reason, quote validity and acceptance timestamp
+- Actual ordered item/SKU, vendor; purchase and payment state (subject to licensing/payment readiness)
+- Duboxx box SKU/size, packaging cost, gift-item cost, personalisation, delivery cost, replacements/refunds
+- Quality inspection status and evidence; expected and actual delivery date; exception/recovery notes
+- Permission to use feedback as testimonial (explicit opt-in)
 
-## Response-time policy
-Internal initial target: triage and respond within one UAE business day. **Do not publish as a guaranteed SLA until staffing and tracking substantiate it.** The website currently promises only a human reply, no time guarantee.
+### Status and milestones
+Current statuses: new, reviewing, sourcing, awaiting_customer, approved, fulfilled, cancelled, closed. Do not map **approved** to **paid**, or **fulfilled** to **delivered on time**, without evidence. "Quoted", "replied", "won" and "lost" are separate outcomes/milestones requiring a documented mapping.
 
-## Email automation status
-No automatic confirmation emails are configured or verified. The website displays the stored request reference only after a successful Supabase write. Introduce a dedicated transaction mail provider (or compliant verified provider) and test sender identity, delivery and failure handling before enabling receipts.
+### Real KPI definitions
+- First-response time: first timestamped human reply minus submitted_at.
+- Directions turnaround: first timestamped verified three-directions message minus submitted_at.
+- Proposal choice: customers who select one direction divided by customers who received proposals.
+- Quote-to-paid conversion: paid orders divided by approved, sent quotes; only once payment records exist.
+- On-time delivery: delivered on/before verified promised datetime divided by delivered orders with actual and promised timestamps.
+- Contribution per order: paid amount minus item, packaging, personalisation, logistics, direct platform and recovery costs. Exclude overhead; call it contribution, not net profit.
+- Quality incident rate: fulfilled orders with a defect, packaging or delivery exception divided by fulfilled orders.
+- Repeat customers: unique repeat paying customer counts, with appropriate privacy controls.
+
+Report "not measurable" rather than turning missing evidence into a flattering percentage.
+
+### Operating cadence
+- **Daily, once enabled**: review new and aged requests; stalled sourcing; unresolved support; upcoming deadlines; draft and approval queue.
+- **Weekly**: triage response time, chosen directions, paid conversion, direct costs, quality exceptions and source reliability.
+- **Monthly/90-day**: demand patterns, Duboxx individual box consumption and cost, repeat purchase, contribution margin and customer-experience evidence before considering bulk packaging.
+
+Internal first-response goal: next UAE business day **only when staff coverage is defined**; no public or automatic promise yet.

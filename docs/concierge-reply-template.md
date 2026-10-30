@@ -1,55 +1,52 @@
-# OCCIVO · Concierge reply template (internal, pilot)
-## Purpose
-Use this when a verified incoming request has been reviewed and source availability, indicative pricing, presentation and delivery feasibility have been checked. Do not treat AI ideas as purchased stock.
+# OCCIVO — Three Directions Customer Reply (human-approved template)
 
-**From:** concierge@occivo.com (send manually from an alias only after outgoing sender verification)
-**Subject:** Your OCCIVO gifting directions · {{request_reference}}
+**Current process:** Draft in OCCIVO operations; send personally from **concierge@occivo.com** once sender authentication and sending are verified. No automated email sender is enabled.
 
-Hello,
+**Subject:** Three thoughtful directions for {{recipient_first_name_or_occasion}} — OCCIVO {{request_ref}}
 
-Thank you for letting OCCIVO consider a gift for {{recipient_name_or_description}}.
+Hi {{customer_name_or_greeting}},
 
-We have three directions to explore for {{occasion}}. We've considered your budget of {{budget}}, your timeline ({{deadline}}), your delivery preference ({{destination}}), and especially {{specific_preference_or_avoidance}}.
+Thank you for sharing {{one_actual_input_about_recipient}}. For {{occasion}}, we have considered three directions chosen for {{recipient_or_relationship}} and your {{all_in_budget}} budget.
 
-**Direction 1 — The Considered Classic**
-- Concept / verified candidate:
-- Why it fits this recipient:
-- Indicative all-in AED price (or range):
-- Product/source verification status:
-- Packaging and handwritten note approach:
-- Delivery feasibility and the latest safe decision date:
+### 1. {{direction_name}}
+**What it is:** {{concise_verified_candidate_or_clearly_labelled_concept}}  
+**Why it fits:** {{specific_customer_input_and_fit}}  
+**Indicative all-in AED price:** {{confirmed_range_or_not_yet_verified}}  
+**Delivery:** {{verified_feasibility_or_uncertainty}}  
+**Presentation:** {{matching_packaging}}
 
-**Direction 2 — The Personal Touch**
-- Concept / verified candidate:
-- Why it fits:
-- Indicative AED price:
-- Availability verification:
-- Presentation:
-- Delivery feasibility:
+### 2. {{direction_name}}
+**What it is:** {{description}}  
+**Why it fits:** {{specific_reason}}  
+**Indicative all-in AED price:** {{price_or_unverified}}  
+**Delivery:** {{feasibility}}  
+**Presentation:** {{plan}}
 
-**Direction 3 — The Memorable Gesture**
-- Concept / verified candidate:
-- Why it fits:
-- Indicative AED price:
-- Availability verification:
-- Presentation:
-- Delivery feasibility:
+### 3. {{direction_name}}
+**What it is:** {{description}}  
+**Why it fits:** {{specific_reason}}  
+**Indicative all-in AED price:** {{price_or_unverified}}  
+**Delivery:** {{feasibility}}  
+**Presentation:** {{plan}}
 
-**Our recommendation:** {{recommendation_and_reason}}
+Our preference is {{direction}} because {{specific_reason}}, but the final choice is yours.
 
-These are proposals, not a confirmed purchase. Once you choose, we will confirm the final items, total price, presentation and delivery before requesting approval.
+If one feels right, reply to this email and we will reconfirm availability, the final price and delivery before you decide. If none quite fits, tell us what feels off; we'll refine it.
 
-You may reply to this message with a preference or question. Please mention reference **{{request_reference}}**.
+For timing: {{clear_verified_deadline_assessment — never an invented promise}}.
 
-Warmly,
-OCCIVO Concierge
-Personal · Considered · Exceptional
+Warmly,  
+OCCIVO Concierge  
+Personal · Considered · Exceptional  
+concierge@occivo.com  
+Reference: {{request_ref}}
 
-## Required QA before sending
-- [ ] All three options materially differ and reflect relationship, occasion, budget and avoidance notes
-- [ ] Product quality and authenticity assessed; real supplier price checked
-- [ ] Delivery feasibility assessed, no unverified promises
-- [ ] Duboxx packaging compatibility and estimated cost noted
-- [ ] No inferior substitutions
-- [ ] Correct sender address configured and tested
-- [ ] Personal and recipient data minimized
+## Mandatory internal sign-off
+- [ ] Why each direction fits an actual customer-supplied preference
+- [ ] Avoidance, child age and occasion respected; no avoidable sensitive-data disclosures
+- [ ] Price source, time and all-in math confirmed or clearly marked unverified
+- [ ] Duboxx individual box appropriateness and packaging cost checked where needed
+- [ ] Delivery feasibility checked against deadline, never guaranteed without verification
+- [ ] Customer-facing content human-reviewed, with refine loop and reference
+- [ ] Sender identity tested; actual sent timestamp captured in the case
+- [ ] No unauthorized buying, reservations, payment collection or supplier commitment
