@@ -31,3 +31,6 @@
 .status{color:#9B3D2E;font-size:.94rem}
 @media(max-width:820px){.hero-media{min-height:300px}}
 @media(max-width:660px){.form-fields,.checkbox-grid{grid-template-columns:1fr}.hero{gap:20px}.hero h1{font-size:clamp(3.25rem,13vw,4.5rem)}.intake-intro{padding-top:36px}.intake-shell{margin-top:12px}.form-actions .btn{width:100%}.nav .nav-cta{padding:8px 11px}}
+
+/* Fix image container dimensions across desktop and narrow mobile viewports */
+.hero-media{height:450px;min-height:0}.hero-photo{height:100%}@media(max-width:820px){.hero-media{height:325px;min-height:0}}
