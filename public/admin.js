@@ -22,7 +22,7 @@ async function api(path,method="GET",body){
 function claims(){try{return JSON.parse(atob(jwt.split(".")[1].replace(/-/g,"+").replace(/_/g,"/")))}catch{return {}}}
 async function enterMfa(){
  const user=await auth("user");
- if(user.email?.toLowerCase()!=="admin@occivo.com"||!user.email_confirmed_at)throw Error("Access restricted to the verified OCCIVO administrator.");
+ if(!user.email_confirmed_at)throw Error("Administrator email verification is required.");
  if(claims().aal==="aal2"){show("dashboard");el("logout").classList.remove("hidden");await list();return;}
  const factors=await auth("factors");
  const available=[...(factors.totp||[]),...(factors.all||[]).filter(x=>x.factor_type==="totp")];
@@ -93,7 +93,7 @@ async function details(id){
   const data=await api("?id="+encodeURIComponent(id));selectedId=id;const r=data.request;
   const grid=node("dl",undefined,"detail-meta");
   const b=r.gifting_brief||{},c=r.selected_concept||{};
-  for(const [label,value] of [["Reference",r.request_ref],["Customer",r.customer_name],["Email",r.customer_email],["Phone",r.customer_phone],["Occasion",b.occasion],["Recipient",b.recipient],["Budget",b.budget],["Timing",b.timing],["Preferences",b.preferences],["Chosen direction",c.style],["Gift idea",c.title],["Description",c.description],["Customer note",r.customer_message]])grid.append(infoCell(label,value));
+  for(const [label,value] of [["Reference",r.request_ref],["Customer",r.customer_name],["Email",r.customer_email],["Phone",r.customer_phone],["Occasion",b.occasion],["Recipient",b.recipient],["Recipient name",b.recipient_name],["Recipient detail",b.recipient_other],["Child age",b.child_age],["Budget",b.budget],["Timing",b.timing],["Delivery",b.destination],["Dubai area",b.dubai_area],["About them",b.about_them],["Gift directions",(b.directions||[]).join(", ")],["Avoid",b.avoid],["Presentation",b.presentation],["Card message",b.card_message],["Other notes",b.other_notes],["Preferences",b.preferences],["Chosen direction",c.style],["Gift idea",c.title],["Description",c.description],["Customer note",r.customer_message]])grid.append(infoCell(label,value));
   const response=node("a","Reply from concierge@occivo.com");response.href="mailto:"+encodeURIComponent(r.customer_email)+"?subject="+encodeURIComponent("OCCIVO gifting request "+r.request_ref);response.className="btn btn-secondary";const wrap=node("div");wrap.append(grid,response);el("detail-body").replaceChildren(wrap);
   el("update-status").value=r.status;el("internal-notes").value=r.internal_notes||"";
   const history=el("history-list");history.replaceChildren();

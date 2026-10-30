@@ -19,11 +19,12 @@ jobs:
           node --check netlify/functions/submit-request.mjs
           node --check netlify/functions/admin-requests.mjs
           node --check netlify/functions/recommend.mjs
-      - name: Security and file isolation checks
+      - name: Security and file isolation
         run: |
           test -f public/index.html
           test -f public/concierge.html
           test -f public/admin.html
+          test -f public/favicon.svg
           test ! -d public/netlify
           ! grep -R 'admin@occivo.com' public/
           ! grep -R 'sb_secret_' public/
