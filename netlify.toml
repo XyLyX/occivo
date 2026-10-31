@@ -25,3 +25,17 @@
   for = "/admin.js"
   [headers.values]
     Cache-Control = "no-store"
+
+[[headers]]
+  for = "/reset-password.html"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow, noarchive"
+    Cache-Control = "no-store"
+    Referrer-Policy = "no-referrer"
+    Content-Security-Policy = "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src https://vtpaxzptyyggapnlkoma.supabase.co; form-action 'self'; base-uri 'none'; frame-ancestors 'none'"
+
+[[headers]]
+  for = "/reset-password.js"
+  [headers.values]
+    Cache-Control = "no-store"
+    Referrer-Policy = "no-referrer"

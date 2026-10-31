@@ -15,6 +15,7 @@ jobs:
         run: |
           node --check public/concierge.js
           node --check public/admin.js
+          node --check public/reset-password.js
           node --check lib/server.mjs
           node --check netlify/functions/submit-request.mjs
           node --check netlify/functions/admin-requests.mjs

@@ -67,3 +67,19 @@ test("homepage and intake have functional entry points and accessible landmarks"
  assert.match(form,/id="confirmation-reference"/);
  assert.doesNotMatch(form,/recipient_phone|recipient_email/i);
 });
+
+test("password reset has request and verified reset forms without signup or privileged keys",()=>{
+ const html=readFileSync("public/reset-password.html","utf8");
+ const js=readFileSync("public/reset-password.js","utf8");
+ const adminHtml=readFileSync("public/admin.html","utf8");
+ assert.match(adminHtml,/href="\/reset-password.html"/);
+ assert.match(html,/id="recovery-form"/);
+ assert.match(html,/id="password-form"/);
+ assert.match(html,/id="confirm-password"/);
+ assert.match(js,/recover\?redirect_to=/);
+ assert.match(js,/await api\("user"/);
+ assert.match(js,/method:"PUT",body:\{password\}/);
+ assert.match(js,/type!=="recovery"/);
+ assert.doesNotMatch(js,/sb_secret_|service_role|signUp\(/);
+ assert.doesNotMatch(html,/admin@occivo.com/);
+});
