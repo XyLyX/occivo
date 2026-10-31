@@ -1,73 +1,124 @@
-# OCCIVO · Intake-to-Three-Directions Decision Aid (Pilot)
+# OCCIVO — Intake-to-Reply Decision Aid, Pilot v1.1
 
-This is a practical human/agent co-pilot, not an excuse to skip the quality gate.
+**Internal operating playbook / human + agent guide.** This document shapes recommendations; it does **not** certify supplier stock, prices, box inventory, courier availability, tax treatment, fulfilment or a customer response. See [agent-operations-v0.md](./agent-operations-v0.md) and [concierge-reply-template.md](./concierge-reply-template.md).
 
-## 1. Triage the request in 2 minutes
+## A. Two-minute triage — hard constraints, not a ranking contest
 
-Read: relationship, occasion, timing, all-in AED budget, geography, preferred gift directions, exclusions, child age (if relevant), packaging and message preference. A missing or conflicting essential constraint is a **clarification**, not permission to guess.
+Read in this sequence to identify blockers quickly. **All** hard constraints must pass before making an offer; a deadline does not override safety, customer exclusions, the all-in budget or fulfilment quality.
 
-- **Urgent:** Today/tomorrow or within three days. Mark for operator immediately; offer only genuinely feasible options. Do not promise courier or vendor availability.
-- **Sensitive constraints:** Food restrictions, dislikes, cultural concerns and age suitability override popularity trends; ask for clarification if necessary, not more personal data.
-- **Outside UAE:** Explicitly flag possible cross-border constraints and verify before recommending delivery timelines.
-- **Under AED 250:** Do not quietly add gift-box/courier charges after showing an indicative price. Prefer simpler high-quality options or a frank feasibility clarification.
-- **5,000+ / bespoke:** Do not assume luxury means high-logo, flashy or expensive without emotional fit.
+1. **Deadline:** Read timing band. If an actual promised day is necessary, establish the exact date, destination-local time and feasibility. The form currently collects a *relative band*, not a guaranteed delivery date.
+2. **Destination:** Dubai area / elsewhere in UAE / outside UAE / self-delivery. **Outside UAE needs the country and, when needed, city or postal region**, before a delivery estimate or priced offer; clarify first.
+3. **All-in budget:** Gift + individually sourced Duboxx presentation + personalisation + tax + shipping + reasonable direct handling/recovery provision; flag feasibility when budget and deadline collide. No unapproved above-budget option.
+4. **Occasion, relationship and child age:** Set tone, appropriateness, intimacy and age-suitability.
+5. **Avoidance:** Treat allergies, cultural concerns, dislikes, duplication and any age or regulatory limits as a veto, not a preference. Ask only necessary follow-up questions; avoid storing sensitive unnecessary details.
+6. **Recipient's own words:** "About them," name (if shared), interests and personal context are the only source of personalised claims. **Never fabricate a hobby, shared memory or recipient personality.**
+7. **Selected directions + presentation:** Use only to break ties and adapt the unboxing; not to overrule the preceding constraints.
 
-## 2. Construct three distinct directions
+**Triage outcomes**: \`READY_TO_CURATE\` if the brief is actionable; \`CLARIFY_DESTINATION\`, \`CLARIFY_DEADLINE\`, \`CLARIFY_AVOIDANCE\`, \`CLARIFY_FIT\`, or \`CANNOT_FULFIL_AS_SPECIFIED\` otherwise. These are internal working labels, **not** new database statuses. Record status in existing \`new/reviewing/sourcing/awaiting_customer/approved/fulfilled/cancelled/closed\` and note the exception until formal event fields are implemented.
 
-| Direction | Appropriate use | Evidence of personal fit |
+## B. Three genuinely different directions — five-minute *draft*, not a fulfilment claim
+
+Use three routes when possible:
+
+| Direction | Purpose | Typical axis |
 |---|---|---|
-| The Considered Classic | Taste uncertain or professional relationship | Justification tied to occasion, relationship and acceptable risks |
-| The Personal Touch | Clear interests, history, daily habits or memories | Specific sentence tied to the recipient's actual preferences |
-| The Memorable Gesture | Important milestone, shared experience or bespoke presentation | Why an enhanced occasion gesture is suited to this person and budget |
+| **The Considered Classic** / safe & sure | Appropriate, high-quality and relatively low taste risk | Useful object, accessible quality, elegant presentation |
+| **The Personal Touch** / thoughtful surprise | References something the customer genuinely told us | Interest-led keepsake, shared experience, personalisation |
+| **The Memorable Gesture** / premium aspiration | Creates an exceptional, appropriate occasion moment | Experience, bespoke touch, special presentation |
 
-Do not force a fixed category for each direction; e.g. if the recipient hates clutter, two more physical objects are not personalisation. If the user selected Experiences, the proposal may include a bookable experience **only after terms/availability are checked**.
+Vary **at least one meaningful axis** across type, emotional intent, and presentation, but prefer two. Three nominally different hampers do not count. Show the tradeoff, not just different product names.
 
-For EACH direction:
-- Concept and candidate option(s), without invented product names.
-- Why it fits, explicitly referencing one recipient input (paraphrase safely).
-- Indicative total AED range that includes actual packaging and expected delivery, with tax status clear.
-- Stock/price **verification timestamp** and link or operator evidence; otherwise \`UNVERIFIED — do not send as fulfilment-ready\`.
-- Fulfilment risk and earliest credible delivery, with clear uncertainties.
-- Presentation plan using individually purchased Duboxx pilot boxes, if a physical gift.
-- One-line tradeoff relative to other directions.
+- Three is a **target**, never a reason to send a weak or unfulfillable third option.
+- Two well-verified directions plus a plain explanation are better than three unsupported options.
+- "Aspirational" means more distinctive **within the user's budget**. If a genuinely above-budget idea could be useful, ask permission first and label it unmistakably; do not silently upsell.
+- Do not force a higher-priced option simply to fill lower/middle/upper price positions.
+- A short personalised \`why_it_fits\` is mandatory. If no recipient preferences were supplied, ground reasoning in *occasion, relationship and stated constraints*, and explicitly identify the missing preferences rather than inventing them.
 
-## 3. Evidence and cost check before sending
+## C. Starting shapes by occasion (ideas, never commitments)
 
-Per candidate, record:
-- Supplier, website or direct source, exact item/SKU, availability evidence, check time.
-- Retail/wholesale cost, personalisation, courier, packaging and other fulfillment costs in AED.
-- Box size/material/finish, individual Duboxx box cost and suitability. If none works, source a higher-quality alternative; do not downgrade.
-- Indicative quote price and *contribution* = quote minus verified direct costs. **This is not net profit**.
-- Quality, authenticity, seller reliability and returns/defect process.
-- Any expiry/validity window or unverified component.
+| Occasion | Considered Classic | Personal Touch | Memorable Gesture |
+|---|---|---|---|
+| Adult birthday | Quality everyday object | Interest-linked experience | Personal keepsake or composed set |
+| Child birthday | Age-suitable book/game | Themed activity or kit | Bespoke safe item |
+| Wedding | Useful, taste-aware home object | Shared experience | Personalised design item |
+| Housewarming | Quality household essential | Suitable gourmet / welcome experience | Personalised home accent |
+| Anniversary | Sentimental but useful | Experience for two | Taste-aware bespoke keepsake |
+| New baby | Practical premium baby item | Personalised keepsake | Thoughtfully composed parent/baby set |
+| Thank-you | Small well-presented gesture | Low-pressure experience | Personalised appreciation object |
+| Corporate/client | Professionally appropriate object | Suitable experience | Custom premium piece |
+| Just because | Small lovely object | Shared-interest surprise | Quiet personal keepsake |
 
-## 4. Quality review checklist
+Don't assume an experience can be booked, shipped or redeemed where the customer lives. For food/drink verify dietary, regional and shipping restrictions. Don't assume all recipients want personalisation or overt luxury.
 
-- [ ] Three directions genuinely different; tied to customer's actual words.
-- [ ] No invented stock/price/availability or impossible delivery promises.
-- [ ] Delivery timing and packaging feasibility checked.
-- [ ] Every avoid/dislike/child-age constraint applied.
-- [ ] Presentation and all-in costs clear.
-- [ ] Human operator approved messaging and sources.
-- [ ] Email sent from verified concierge sender and timestamp logged.
-- [ ] Clear reply/refinement invitation included.
-- [ ] Customer told the options are provisional until final quotation approval.
+## D. Budget viability guide (AED, inclusive end-to-end)
 
-## 5. When customer responds
+| Band | Reasonable starting forms | Common failure to avoid |
+|---|---|---|
+| Under 250 | Single excellent item, book, flowers, simple gourmet, refined packaging | Packaging/courier swallowing the budget; an affordable experience may still be suitable if verified |
+| 250–500 | Quality small home item, curated compact gift, modest local experience | Multi-item sets with little QC/logistics allowance |
+| 500–1,000 | Premium object or experience, small curated set | Bespoke assumptions, hidden delivery costs |
+| 1,000–2,500 | Meaningful experience for two, design piece, careful customisation | Generic expensive hamper as a substitute for personal fit |
+| 2,500–5,000 | Bespoke option, premium experience, high-quality multipart presentation | Enlarged cheap gift or unverified international fulfilment |
+| 5,000+ / bespoke | Considered commission, high-end experience, extraordinary personal fit | Spending just to hit a price; there is no obligation to exhaust budget |
 
-- If selecting: verify the exact items, price and delivery again before sending the final offer.
-- If refining: ask what is off, preserve same request_ref, and revise only the affected dimension unless the customer changes more.
-- If no answer: create a single considered follow-up task; never send repeated automated nudges without consent.
-- If unhappy/damaged: route to quality/recovery immediately and preserve the evidence and resolution outcome.
+These are **hypotheses**, not product eligibility rules. Verify all actual prices and inclusions before communicating them.
 
-## 6. Example compact output (fictional, no actual supplier claims)
+## E. Personalisation — three minutes
 
-Reference OC-EXAMPLE, friend, birthday, loves books and design, budget AED 250–500, Dubai, within 2 weeks.
+For **each** proposed direction, fill:
 
-**Direction 1 — The Considered Classic:** Curated design book with refined presentation. *Why:* recipient enjoys books and design. *Price and delivery:* not yet verified — sourcing research required.
+- \`evidence_from_brief\`: customer wording / precise paraphrase, or only explicit relationship + occasion constraints if there was no recipient detail.
+- \`why_it_fits\`: one sentence that *would not work unchanged for almost any other recipient*.
+- \`difference_from_others\`: meaningful reason for this direction rather than an arbitrary label.
 
-**Direction 2 — The Personal Touch:** A personalised stationery or print concept. *Why:* honours creative interests without assuming a fashion or fragrance preference. *Price and delivery:* not yet verified — sourcing research required.
+Examples: "They love cooking and rarely treat themselves" → "A considered kitchen object they would use repeatedly, chosen because cooking is one of their stated interests." Do **not** extrapolate to "they love luxury brands" unless told so.
 
-**Direction 3 — The Memorable Gesture:** A creative workshop experience with a thoughtful physical invitation. *Why:* directly connected to the stated artistic interests. *Price and delivery:* experience inventory and terms unverified — must check.
+If all justifications sound generic, ask one focused follow-up question or give an honestly provisional direction rather than manufacturing intimacy.
 
-These are concept directions, NOT offers. Do not send until real sourcing, cost, availability, and delivery details are checked.
+## F. Sourcing and delivery — a separate evidence-gated stage
+
+**No credible seven-minute universal promise.** Some items may be researched rapidly; customised gifts and cross-border delivery may take hours/days to verify.
+
+For each candidate record:
+- [ ] **Vendor and exact SKU/service** identified, trustworthy and feasible, with source URL/direct supplier evidence and checked-at timestamp.
+- [ ] **Price and direct costs in AED:** item, taxes, individual Duboxx box (size/quality and cost verified), wrapping, inscription/personalisation, logistics, insurance/customs where relevant and contingencies.
+- [ ] **Quality and authenticity:** evidence of material/finish, vendor reliability and fault/return conditions. Do not accept a poorer item or box to improve margin.
+- [ ] **Avoidance and suitability:** exclusions, age/cultural constraints and destination rules satisfied.
+- [ ] **Delivery:** exact destination established, courier/supplier window checked for requested date, no false guarantees. Outside UAE requires country-specific handling and customs feasibility.
+- [ ] **Presentation:** can actually assemble and deliver as shown; a handwritten note is a commitment only once production and timing are confirmed.
+- [ ] **Backup:** at least the Classic direction has a viable alternate where feasible; otherwise disclose the dependency.
+- [ ] **Margin:** indicative contribution = proposed price - directly attributable verified costs; it is **not** net profit.
+
+**Evidence state per direction:** \`DRAFT\` → \`RESEARCHING\` → \`EVIDENCE_COMPLETE\` → \`HUMAN_APPROVED\`; if evidence missing, \`UNVERIFIED\` and blocked from fulfilment-ready representation. These are proposed internal agent states, not current database fields.
+
+## G. Human approval + communication gate
+
+- [ ] 2–3 credible directions, each tied to a real customer input.
+- [ ] No hidden price increases or invented sourcing / shipping claims.
+- [ ] Budget, avoid list, quality and packaging all pass.
+- [ ] Every delivery and price statement states the source/verification age or uncertainty.
+- [ ] Human reviewer chooses which directions to present, edits tone and explicitly approves.
+- [ ] Reply sent **manually** from verified \`concierge@occivo.com\`; log actual timestamp in the same case.
+- [ ] Customer may choose, request a refinement or decline; refine without losing request history.
+- [ ] A customer who approves a concept **has not automatically placed or paid for an order**.
+
+If verified sourcing cannot meet the *internal* response target, send a truthful **human-reviewed holding reply**. Never promise a completion time absent evidence. No public SLA until coverage and history substantiate it. Automatic receipts are not yet verified.
+
+## H. Operating timing: what can be targeted vs guaranteed
+
+| Work segment | Target for straightforward briefs | Promise? |
+|---|---|---|
+| Triage | ~2 minutes | Internal only |
+| Draft three distinct concepts | ~5 minutes | Internal only |
+| Write input-specific reasons | ~3 minutes | Internal only |
+| Review proposal draft + compose acknowledgement | ~3–5 minutes | Internal only |
+| Supplier evidence, packaging, tax and delivery validation | **Variable** by item and destination | **Never assume 7 minutes** |
+| Send and log verified reply | Once approved and sender verified | Customer-facing SLA only after tested |
+
+**The realistic target is ~15–20 minutes of editorial work, plus however long fulfilment verification takes.**
+
+## I. Example — constraints can supersede curation
+
+**Fictional example:** Partner/spouse anniversary; AED 1,000–2,500; request "within 2 weeks"; destination "outside UAE"; no hobbies or country specified.
+
+**Correct result:** \`CLARIFY_DESTINATION\` and \`CLARIFY_DEADLINE\`; ask the destination country/city and exact delivery date. You may draft three tentative concepts internally, but must not claim they can be delivered or quote all-in prices without international sourcing evidence. Do not invent tastes or specific suppliers.

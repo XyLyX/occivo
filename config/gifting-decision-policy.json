@@ -1,0 +1,126 @@
+{
+  "version": "1.1",
+  "status": "DESIGN_ONLY",
+  "owner": "OCCIVO",
+  "pilot_days": 90,
+  "invariant_rules": [
+    "quality_and_authenticity",
+    "avoidance_and_age_suitability",
+    "all_in_budget",
+    "destination_and_deadline_feasibility",
+    "human_approval_before_customer_communications",
+    "no_autonomous_purchasing"
+  ],
+  "triage_order": [
+    "requested_timing",
+    "destination",
+    "all_in_budget",
+    "occasion",
+    "relationship_and_child_age",
+    "avoid_list",
+    "about_them",
+    "directions_and_presentation"
+  ],
+  "triage_labels": [
+    "READY_TO_CURATE",
+    "CLARIFY_DESTINATION",
+    "CLARIFY_DEADLINE",
+    "CLARIFY_AVOIDANCE",
+    "CLARIFY_FIT",
+    "CANNOT_FULFIL_AS_SPECIFIED"
+  ],
+  "triage_rules": [
+    {
+      "if": {
+        "destination": "Outside UAE",
+        "country_missing": true
+      },
+      "result": "CLARIFY_DESTINATION",
+      "blocking": [
+        "delivery_promise",
+        "all_in_delivery_price"
+      ]
+    },
+    {
+      "if": {
+        "delivery_exact_date_required": true,
+        "exact_date_missing": true
+      },
+      "result": "CLARIFY_DEADLINE",
+      "blocking": [
+        "delivery_promise"
+      ]
+    },
+    {
+      "if": {
+        "exclusions_unclear": true
+      },
+      "result": "CLARIFY_AVOIDANCE",
+      "blocking": [
+        "fulfilment_ready_proposal"
+      ]
+    },
+    {
+      "if": {
+        "verified_total_cost_exceeds_budget": true,
+        "customer_has_not_approved_exception": true
+      },
+      "result": "CANNOT_FULFIL_AS_SPECIFIED",
+      "blocking": [
+        "quote_or_purchase"
+      ]
+    }
+  ],
+  "direction_targets": [
+    {
+      "key": "considered_classic",
+      "intent": "safe_suitable_high_quality",
+      "preferred_axes": [
+        "type",
+        "taste_risk",
+        "presentation"
+      ]
+    },
+    {
+      "key": "personal_touch",
+      "intent": "input_grounded_surprise",
+      "preferred_axes": [
+        "personalization",
+        "type"
+      ]
+    },
+    {
+      "key": "memorable_gesture",
+      "intent": "occasion_appropriate_distinctive",
+      "preferred_axes": [
+        "presentation",
+        "experience"
+      ],
+      "not_above_budget_without_permission": true
+    }
+  ],
+  "direction_fields": [
+    "concept",
+    "actual_input_cited",
+    "why_it_fits",
+    "difference_from_other_directions",
+    "estimated_total_aed",
+    "supplier_evidence",
+    "verified_at",
+    "destination_feasibility",
+    "presentation_plan",
+    "quality_check",
+    "approval_status"
+  ],
+  "proposed_internal_evidence_states": [
+    "DRAFT",
+    "RESEARCHING",
+    "UNVERIFIED",
+    "EVIDENCE_COMPLETE",
+    "HUMAN_APPROVED"
+  ],
+  "source_of_truth": "Supabase gift_requests and gift_request_events",
+  "rollout_gate": "No agent autonomous actions until intake/admin and email operations verified",
+  "no_live_automation_or_mail_claimed": true,
+  "policy_doc": "docs/intake-to-directions-guide.md"
+}

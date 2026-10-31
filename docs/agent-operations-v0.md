@@ -61,6 +61,11 @@ Current status enum is \`new → reviewing → sourcing → awaiting_customer �
 - Do not schedule paid AI loops on empty databases or blanket-scan every case. Rule-driven triggers, queue dedupe, budget caps and retries with backoff.
 - A user-facing reminder or daily report should be opt-in; no silent WhatsApp or customer notifications.
 
+
+## Curation policy binding (pilot v1.1)
+
+The Curator, Sourcing and Communications agents must all follow [intake-to-directions-guide.md](./intake-to-directions-guide.md) and the human scan sheet [concierge-desk-card.md](./concierge-desk-card.md). A design-only machine-readable rule map is kept in `config/gifting-decision-policy.json`; it is **not** a deployed job runner or enforcement engine. Deadline, avoidance, budget, source evidence and product/packaging quality are simultaneous hard gates. The trio is Classic / Personal / Memorable, but **two verifiably good directions beat an invented third**. Most importantly, target 15–20 minutes of *editorial drafting* separately from variable sourcing, QC and cross-border delivery verification. Do not offer external SLA or claim autonomous email dispatch from this design.
+
 ## Launch gates
 
 1. One real end-to-end dummy request produces a reference and a Supabase row, then displays correctly in MFA-protected admin.
