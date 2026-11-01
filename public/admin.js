@@ -99,10 +99,11 @@ async function details(id){
   const grid=node("dl",undefined,"detail-meta");
   const b=r.gifting_brief||{},c=r.selected_concept||{};
   for(const [label,value] of [["Reference",r.request_ref],["Customer",r.customer_name],["Email",r.customer_email],["Phone",r.customer_phone],["Occasion",b.occasion],["Recipient",b.recipient],["Recipient name",b.recipient_name],["Recipient detail",b.recipient_other],["Child age",b.child_age],["Budget",b.budget],["Timing",b.timing],["Delivery",b.destination],["Dubai area",b.dubai_area],["About them",b.about_them],["Gift directions",(b.directions||[]).join(", ")],["Avoid",b.avoid],["Presentation",b.presentation],["Card message",b.card_message],["Other notes",b.other_notes],["Preferences",b.preferences],["Chosen direction",c.style],["Gift idea",c.title],["Description",c.description],["Customer note",r.customer_message]])grid.append(infoCell(label,value));
-  const response=node("a","Reply from concierge@occivo.com");response.href="mailto:"+encodeURIComponent(r.customer_email)+"?subject="+encodeURIComponent("OCCIVO gifting request "+r.request_ref);response.className="btn btn-secondary";const wrap=node("div");wrap.append(grid,response);el("detail-body").replaceChildren(wrap);
+  const response=node("a","Open email draft (select your verified sender)");response.href="mailto:"+encodeURIComponent(r.customer_email)+"?subject="+encodeURIComponent("OCCIVO gifting request "+r.request_ref);response.className="btn btn-secondary";const wrap=node("div");wrap.append(grid,response);el("detail-body").replaceChildren(wrap);
   el("update-status").value=r.status;el("internal-notes").value=r.internal_notes||"";
   const history=el("history-list");history.replaceChildren();
   for(const h of data.events||[]){history.append(node("div",new Date(h.created_at).toLocaleString()+" · "+h.event_type+" · "+(h.event_notes||""),"history-item"))}
+  await loadContacts(id);
   el("request-detail").classList.remove("hidden");el("request-detail").scrollIntoView({behavior:"auto",block:"start"});el("update-status").focus();
  }catch(err){tell("dashboard-message",err.message)}
 }
@@ -178,4 +179,68 @@ el("watchtower-scan").addEventListener("click",async()=>{
  try{await watchApi("POST");await loadWatchtower();}
  catch(err){tell("watchtower-health","Scan failed: "+err.message+". No customer records were changed.");}
  finally{button.disabled=false;button.textContent="Scan now";}
+});
+\n
+// Manual, operator-attested external contact ledger. Never sends or verifies delivery.
+let pendingContactEventId="";
+async function contactApi(path,method="GET",body){
+ const r=await fetch("/api/admin-contacts"+path,{
+  method,headers:{"Authorization":"Bearer "+jwt,"Content-Type":"application/json"},
+  body:body?JSON.stringify(body):undefined,cache:"no-store"
+ });
+ const data=await r.json().catch(()=>({}));
+ if(!r.ok)throw Error(data.error||"Contact history is unavailable");
+ return data;
+}
+async function loadContacts(id){
+ const target=el("contact-history");
+ target.replaceChildren();
+ el("contact-message").textContent="";
+ try{
+  const {records}=await contactApi("?id="+encodeURIComponent(id));
+  if(!records.length){
+   target.append(node("p","No outbound contacts recorded. This does not prove no email was sent.","small"));
+   return;
+  }
+  for(const r of records){
+   const line=node("div",undefined,"contact-entry");
+   line.append(
+    node("strong",r.channel+" · "+r.purpose),
+    node("span",watchedDate(r.logged_at)+" · Operator attestation, delivery not verified"),
+    node("p",r.operator_note||"No note")
+   );
+   target.append(line);
+  }
+ }catch(err){
+  target.append(node("p","Unable to load contact history: "+err.message,"small"));
+ }
+}
+el("contact-form").addEventListener("submit",async e=>{
+ e.preventDefault();
+ if(!selectedId)return;
+ const form=el("contact-form");
+ if(!form.reportValidity())return;
+ const button=el("contact-save");
+ button.disabled=true;
+ tell("contact-message","Recording operator-attested contact…");
+ if(!pendingContactEventId)pendingContactEventId=crypto.randomUUID();
+ try{
+  await contactApi("","POST",{
+   event_id:pendingContactEventId,case_id:selectedId,
+   channel:el("contact-channel").value,
+   purpose:el("contact-purpose").value,
+   note:el("contact-note").value,
+   attested:el("contact-attested").checked
+  });
+  pendingContactEventId="";
+  form.reset();
+  await loadContacts(selectedId);
+  tell("contact-message","Contact recorded. This is not proof of inbox delivery. Choose Scan now to reconcile Watchtower.");
+ }catch(err){
+  tell("contact-message","Unable to record contact: "+err.message);
+ }finally{button.disabled=false;}
+});
+el("contact-form").addEventListener("change",()=>{
+ // Operator changing the event means it must have a distinct idempotency ID.
+ pendingContactEventId="";
 });

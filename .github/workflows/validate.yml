@@ -19,6 +19,7 @@ jobs:
           node --check lib/watchtower-service.mjs
           node --check netlify/functions/watchtower-scan.mjs
           node --check netlify/functions/admin-watchtower.mjs
+          node --check netlify/functions/admin-contacts.mjs
           node --check public/reset-password.js
           node --check lib/server.mjs
           node --check netlify/functions/submit-request.mjs

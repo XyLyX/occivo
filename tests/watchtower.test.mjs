@@ -42,3 +42,15 @@ test("watchtower is MFA protected and scheduled, no outbound customer messaging"
  assert.match(html,/id="watchtower-scan"/);
  assert.match(js,/watchApi\("POST"\)/);
 });
+
+test("first response absence is flagged independently of case status and never asserted as a missing email",()=>{
+ const t=Date.parse("2026-11-01T10:00:00Z");
+ const r=make({status:"reviewing",created_at:earlier(8),updated_at:earlier(1)});
+ const missing=evaluateCases([r],t,new Set());
+ assert.deepEqual(missing.map(x=>x.code),["first_contact_unrecorded"]);
+ assert.match(missing[0].detail,/not proof no message was sent/i);
+ assert.deepEqual(evaluateCases([r],t,new Set([r.id])),[]);
+ const newCase=make({created_at:earlier(8)});
+ const codes=evaluateCases([newCase],t,new Set()).map(x=>x.code);
+ assert.deepEqual(codes,["first_contact_unrecorded","new_request","new_over_4h"]);
+});
