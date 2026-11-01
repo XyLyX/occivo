@@ -10,7 +10,7 @@ function tell(id,message){el(id).textContent=message}
 async function auth(path,{method="GET",body,token=jwt}={}){
  const r=await fetch(SB_URL+"/auth/v1/"+path,{method,headers:{"apikey":SB_KEY,"Content-Type":"application/json",...(token?{"Authorization":"Bearer "+token}:{})},body:body?JSON.stringify(body):undefined,cache:"no-store"});
  const data=await r.json().catch(()=>({}));
- if(!r.ok)throw Error(data.msg||data.message||data.error_description||"Authentication failed");
+ if(!r.ok)throw Error(data.msg||data.message||data.error_description||data.error||("Supabase rejected this request (HTTP "+r.status+")."));
  return data;
 }
 async function api(path,method="GET",body){
@@ -24,9 +24,10 @@ async function enterMfa(){
  const user=await auth("user");
  if(!user.email_confirmed_at)throw Error("Administrator email verification is required.");
  if(claims().aal==="aal2"){show("dashboard");el("logout").classList.remove("hidden");await list();return;}
- const factors=await auth("factors");
- const available=[...(factors.totp||[]),...(factors.all||[]).filter(x=>x.factor_type==="totp")];
- const factor=available.find(x=>x.status==="verified");
+ // Match Supabase's mfa.listFactors(): MFA factors arrive in GET /user.
+ // GET /auth/v1/factors is unsupported and returns HTTP 405.
+ const factors=Array.isArray(user.factors)?user.factors:[];
+ const factor=factors.find(x=>x.factor_type==="totp"&&x.status==="verified");
  enrolling=!factor;
  if(factor){factorId=factor.id;el("mfa-explain").textContent="Enter the current code from your authenticator app.";el("mfa-qr").classList.add("hidden");el("mfa-secret").textContent="";}
  else{
@@ -48,13 +49,17 @@ function signout(){
 }
 el("login-form").addEventListener("submit",async e=>{
  e.preventDefault();tell("login-message","Checking credentials…");
+ let passwordAccepted=false;
  try{
   const email=el("email").value.trim().toLowerCase();
   if(!email)throw Error("Administrator email is required.");
   const session=await auth("token?grant_type=password",{method:"POST",token:"",body:{email,password:el("password").value}});
   jwt=session.access_token||"";if(!jwt)throw Error("No session token received");
+  passwordAccepted=true;
   el("password").value="";tell("login-message","");await enterMfa();
- }catch(err){tell("login-message",err.message);}
+ }catch(err){
+  tell("login-message",passwordAccepted?"Password accepted. Authenticator setup failed: "+err.message:"Sign-in failed: "+err.message);
+ }
 });
 el("mfa-form").addEventListener("submit",async e=>{
  e.preventDefault();tell("mfa-message","Verifying…");
