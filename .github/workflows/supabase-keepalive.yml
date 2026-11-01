@@ -1,0 +1,47 @@
+name: OCCIVO Supabase keepalive
+
+# Small independent fallback for the Free plan. Not a guarantee against pausing.
+# Every third *calendar day* (month boundaries may shorten the gap).
+on:
+  schedule:
+    - cron: "17 5 */3 * *" # 05:17 UTC = 09:17 Dubai
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/supabase-keepalive.yml" # initial live test on first commit
+
+permissions:
+  contents: read
+
+concurrency:
+  group: occivo-supabase-keepalive
+  cancel-in-progress: false
+
+jobs:
+  ping:
+    name: Verify a zero-data Supabase query
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Call OCCIVO constant-only database RPC
+        shell: bash
+        env:
+          SUPABASE_URL: https://vtpaxzptyyggapnlkoma.supabase.co
+          # Public publishable key, already included in OCCIVO's website; never use a secret/service-role key.
+          SUPABASE_PUBLISHABLE_KEY: sb_publishable_8RVKrrjBGnF5q6bbHRSi9w_K575VkTZ
+        run: |
+          set -euo pipefail
+          result="$(curl --fail --silent --show-error \
+            --connect-timeout 10 --max-time 20 \
+            --retry 2 --retry-delay 5 --retry-all-errors \
+            --request POST \
+            --url "$SUPABASE_URL/rest/v1/rpc/occivo_keepalive_v1" \
+            --header "apikey: $SUPABASE_PUBLISHABLE_KEY" \
+            --header "Content-Type: application/json" \
+            --header "Cache-Control: no-cache" \
+            --data '{}')"
+          if [[ "$result" != "1" ]]; then
+            echo "::error::Unexpected heartbeat response (expected constant 1)." >&2
+            exit 1
+          fi
+          echo "OCCIVO heartbeat completed: database RPC responded successfully."

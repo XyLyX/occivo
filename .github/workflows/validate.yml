@@ -35,5 +35,12 @@ jobs:
           ! grep -R 'admin@occivo.com' public/
           ! grep -R 'sb_secret_' public/
           grep -q 'publish = "public"' netlify.toml
+      - name: Supabase heartbeat file and key safety
+        run: |
+          test -f .github/workflows/supabase-keepalive.yml
+          test -f docs/supabase-keepalive.sql
+          grep -q 'rpc/occivo_keepalive_v1' .github/workflows/supabase-keepalive.yml
+          grep -q 'security invoker' docs/supabase-keepalive.sql
+          ! grep -Eiq 'sb_secret_|service_role' .github/workflows/supabase-keepalive.yml
       - name: Unit tests
         run: node --test tests/*.test.mjs
