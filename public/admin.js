@@ -180,7 +180,7 @@ el("watchtower-scan").addEventListener("click",async()=>{
  catch(err){tell("watchtower-health","Scan failed: "+err.message+". No customer records were changed.");}
  finally{button.disabled=false;button.textContent="Scan now";}
 });
-\n
+
 // Manual, operator-attested external contact ledger. Never sends or verifies delivery.
 let pendingContactEventId="";
 async function contactApi(path,method="GET",body){
