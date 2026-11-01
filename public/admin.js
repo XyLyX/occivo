@@ -23,7 +23,7 @@ function claims(){try{return JSON.parse(atob(jwt.split(".")[1].replace(/-/g,"+")
 async function enterMfa(){
  const user=await auth("user");
  if(!user.email_confirmed_at)throw Error("Administrator email verification is required.");
- if(claims().aal==="aal2"){show("dashboard");el("logout").classList.remove("hidden");await list();return;}
+ if(claims().aal==="aal2"){show("dashboard");el("logout").classList.remove("hidden");await list();await loadWatchtower();return;}
  // Match Supabase's mfa.listFactors(): MFA factors arrive in GET /user.
  // GET /auth/v1/factors is unsupported and returns HTTP 405.
  const factors=Array.isArray(user.factors)?user.factors:[];
@@ -69,7 +69,7 @@ el("mfa-form").addEventListener("submit",async e=>{
   if(verified.access_token)jwt=verified.access_token;
   if(claims().aal!=="aal2")throw Error("Second factor was not established");
   el("mfa-code").value="";el("mfa-qr").src="";el("mfa-qr").classList.add("hidden");
-  tell("mfa-message","");show("dashboard");el("logout").classList.remove("hidden");await list();
+  tell("mfa-message","");show("dashboard");el("logout").classList.remove("hidden");await list();await loadWatchtower();
  }catch(err){tell("mfa-message",err.message)}
 });
 el("mfa-cancel").addEventListener("click",signout);el("logout").addEventListener("click",signout);
@@ -109,8 +109,73 @@ async function details(id){
 el("update-form").addEventListener("submit",async e=>{
  e.preventDefault();if(!selectedId)return;
  tell("dashboard-message","Saving…");
- try{await api("","PATCH",{id:selectedId,status:el("update-status").value,notes:el("internal-notes").value});await details(selectedId);await list();tell("dashboard-message","Request updated.");}
+ try{await api("","PATCH",{id:selectedId,status:el("update-status").value,notes:el("internal-notes").value});await details(selectedId);await list();await loadWatchtower();tell("dashboard-message","Request updated. Watchtower flags will reconcile on the next scan.");}
  catch(err){tell("dashboard-message",err.message)}
 });
 el("close-detail").addEventListener("click",()=>{el("request-detail").classList.add("hidden");selectedId="";el("refresh").focus()});
-el("filter").addEventListener("change",list);el("refresh").addEventListener("click",list);
+el("filter").addEventListener("change",list);el("refresh").addEventListener("click",async()=>{await list();await loadWatchtower()});
+
+
+// Watchtower is a read-only operator queue; only a verified AAL2 session can access its API.
+async function watchApi(method="GET"){
+ const r=await fetch("/api/admin-watchtower",{method,headers:{"Authorization":"Bearer "+jwt,"Content-Type":"application/json"},cache:"no-store"});
+ const d=await r.json().catch(()=>({}));
+ if(!r.ok)throw Error(d.error||("Watchtower HTTP "+r.status));
+ return d;
+}
+function watchedDate(value){
+ if(!value)return "Not yet";
+ try{return new Date(value).toLocaleString("en-AE",{timeZone:"Asia/Dubai",dateStyle:"medium",timeStyle:"short"})+" Dubai";}
+ catch{return "Not yet";}
+}
+async function loadWatchtower(){
+ const queue=el("watchtower-list");
+ const health=el("watchtower-health");
+ health.textContent="Loading Watchtower…";
+ try{
+  const data=await watchApi();
+  queue.replaceChildren();
+  const counts=el("watchtower-counts");
+  counts.replaceChildren();
+  for(const [label,n] of [["Urgent",data.counts?.urgent||0],["High",data.counts?.high||0],["Normal",data.counts?.normal||0]]){
+   const tile=node("div",undefined,"watch-count");
+   tile.append(node("strong",n),node("span",label));counts.append(tile);
+  }
+  const scan=data.latest_scan;
+  if(!scan){
+   health.textContent="No successful scan recorded yet. Choose Scan now. Empty alerts do not mean no problems.";
+  }else{
+   const age=(Date.now()-new Date(scan.started_at).getTime())/60000;
+   const overdue=age>75;
+   health.textContent="Last scan: "+watchedDate(scan.started_at)+" · "+scan.state+
+     " · "+scan.scanned_count+" active case(s) checked"+
+     (overdue?" · Scheduled scan appears late":"")+
+     (data.truncated?" · Alert display limited to 200":"");
+  }
+  if(!data.alerts?.length){
+   queue.append(node("p",scan?.state==="success"?"No active alerts in the latest successful scan.":"No alerts to display; scan health is not confirmed.","watch-empty"));
+   return;
+  }
+  for(const a of data.alerts){
+   const card=node("button",undefined,"watch-alert watch-"+a.severity);
+   card.type="button";
+   const heading=node("div",undefined,"watch-alert-line");
+   heading.append(node("strong",a.title),node("span",a.severity.toUpperCase(),"watch-priority"));
+   card.append(heading,node("span",a.detail,"watch-description"));
+   card.setAttribute("aria-label",a.severity+" priority: "+a.title+". Open request details");
+   card.addEventListener("click",()=>details(a.request_id));
+   queue.append(card);
+  }
+ }catch(err){
+  queue.replaceChildren();
+  health.textContent="Watchtower unavailable: "+err.message+". The manual request list remains available.";
+ }
+}
+el("watchtower-scan").addEventListener("click",async()=>{
+ const button=el("watchtower-scan");
+ button.disabled=true;button.textContent="Scanning…";
+ tell("watchtower-health","Checking active cases securely…");
+ try{await watchApi("POST");await loadWatchtower();}
+ catch(err){tell("watchtower-health","Scan failed: "+err.message+". No customer records were changed.");}
+ finally{button.disabled=false;button.textContent="Scan now";}
+});
