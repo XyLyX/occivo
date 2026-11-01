@@ -46,7 +46,7 @@ function makeHarness({factors=[],challenge=false}={}){
   vm.runInNewContext(adminJS,ctx,{filename:"public/admin.js"});
   $("email").value="operator@example.test";
   $("password").value="test-not-a-real-password";
-  return {$,calls,submit:async()=>{$("login-form").listeners.submit({preventDefault(){}})}};
+  return {$,calls,submit:()=>$("login-form").listeners.submit({preventDefault(){}})};
 }
 
 test("new admin password is accepted and first MFA enrollment uses the user record",async()=>{
